@@ -1,0 +1,16 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env*
+
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+*.whl
+
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
