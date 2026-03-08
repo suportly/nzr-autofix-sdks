@@ -1,7 +1,9 @@
 /** Configuration options for the NZR Autofix SDK. */
 export interface NzrConfig {
-  /** Data Source Name — the ingest endpoint URL with auth token. */
-  dsn: string
+  /** Data Source Name — unique project identifier for authentication. Empty or omitted = no-op mode. */
+  dsn?: string
+  /** Ingest endpoint URL. If omitted and dsn starts with http, dsn is used as both. */
+  endpointUrl?: string
   /** Environment name (e.g., 'production', 'staging'). Default: 'production'. */
   environment?: string
   /** Application release/version string. */
@@ -24,6 +26,8 @@ export interface NzrConfig {
   beforeSend?: (event: ErrorEvent) => ErrorEvent | null
   /** Enable automatic global error handlers. Default: true. */
   enableGlobalHandlers?: boolean
+  /** Enable debug logging to console. Default: false. Also reads VITE_NZR_AUTOFIX_DEBUG env var. */
+  debug?: boolean
 }
 
 /** A parsed stack trace frame. */
@@ -89,6 +93,7 @@ export interface Breadcrumb {
 /** Resolved SDK configuration with defaults applied. */
 export interface ResolvedConfig {
   dsn: string
+  endpointUrl: string
   environment: string
   release: string
   serverName: string

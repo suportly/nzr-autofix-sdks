@@ -1,5 +1,6 @@
 import type { NzrConfig } from './types'
 import { NzrClient } from './client'
+import { resolveConfig } from './config'
 import { setupGlobalHandlers } from './integrations/global-handlers'
 
 export type {
@@ -30,10 +31,18 @@ let _client: NzrClient | null = null
  * init({ dsn: 'https://your-server.com/api/autofix/ingest/' })
  * ```
  */
-export function init(config: NzrConfig): NzrClient {
+export function init(config: NzrConfig): NzrClient | null {
   if (_client) {
     console.warn('nzr_autofix: init() called more than once. Ignoring.')
     return _client
+  }
+
+  const resolved = resolveConfig(config)
+  if (!resolved) {
+    if (typeof console !== 'undefined') {
+      console.debug('nzr_autofix: no DSN configured, running in no-op mode')
+    }
+    return null
   }
 
   _client = new NzrClient(config)

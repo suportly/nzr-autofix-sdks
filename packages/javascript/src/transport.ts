@@ -5,6 +5,7 @@ import type { ErrorEvent } from './types'
  * Uses sendBeacon on page unload for reliable delivery.
  */
 export class Transport {
+  private readonly endpointUrl: string
   private readonly dsn: string
   private readonly timeout: number
   private readonly maxQueueSize: number
@@ -13,11 +14,13 @@ export class Transport {
   private timer: ReturnType<typeof setInterval> | null = null
 
   constructor(
+    endpointUrl: string,
     dsn: string,
     timeout: number = 5000,
     maxQueueSize: number = 100,
     flushIntervalMs: number = 5000,
   ) {
+    this.endpointUrl = endpointUrl
     this.dsn = dsn
     this.timeout = timeout
     this.maxQueueSize = maxQueueSize
@@ -78,7 +81,7 @@ export class Transport {
           const blob = new Blob([JSON.stringify(event)], {
             type: 'application/json',
           })
-          navigator.sendBeacon(this.dsn, blob)
+          navigator.sendBeacon(this.endpointUrl, blob)
         }
         this.queue = []
       }
@@ -97,7 +100,7 @@ export class Transport {
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), this.timeout)
 
-        const response = await fetch(this.dsn, {
+        const response = await fetch(this.endpointUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -23,8 +23,13 @@ export class NzrClient {
   private breadcrumbs: Breadcrumb[] = []
 
   constructor(rawConfig: NzrConfig) {
-    this.config = resolveConfig(rawConfig)
+    const resolved = resolveConfig(rawConfig)
+    if (!resolved) {
+      throw new Error('nzr_autofix: dsn is required when creating NzrClient directly')
+    }
+    this.config = resolved
     this.transport = new Transport(
+      this.config.endpointUrl,
       this.config.dsn,
       this.config.sendTimeoutMs,
       this.config.maxQueueSize,

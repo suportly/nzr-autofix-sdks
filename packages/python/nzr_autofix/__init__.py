@@ -18,11 +18,14 @@ __version__ = '0.1.0'
 _client = None
 
 
-def init(dsn: str, **options) -> None:
+def init(dsn: str = '', **options) -> None:
     """Initialize the SDK. Must be called once at application startup.
 
+    If dsn is empty or not provided, the SDK operates in no-op mode:
+    all capture calls silently return None and no data is sent.
+
     Args:
-        dsn: Data Source Name for the autofix project.
+        dsn: Data Source Name for the autofix project. Empty string disables the SDK.
         **options: Additional config options (environment, release, server_name,
                    capture_locals, sanitize_patterns, max_queue_size, send_timeout,
                    before_send).
@@ -35,9 +38,17 @@ def init(dsn: str, **options) -> None:
         return
 
     from .config import Config
-    from .client import Client
 
     config = Config(dsn=dsn, **options)
+
+    if not config.is_configured:
+        import logging
+        logging.getLogger('nzr_autofix').debug(
+            'nzr_autofix: no DSN configured, running in no-op mode'
+        )
+        return
+
+    from .client import Client
     _client = Client(config)
 
 

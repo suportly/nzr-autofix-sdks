@@ -22,6 +22,7 @@ class Client:
     def __init__(self, config: Config):
         self.config = config
         self._transport = Transport(
+            endpoint_url=config.endpoint_url,
             dsn=config.dsn,
             timeout=config.send_timeout,
             max_queue_size=config.max_queue_size,

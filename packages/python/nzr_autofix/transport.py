@@ -14,7 +14,8 @@ logger = logging.getLogger('nzr_autofix')
 class Transport:
     """Non-blocking HTTP transport using a background daemon thread."""
 
-    def __init__(self, dsn: str, timeout: float = 5.0, max_queue_size: int = 100):
+    def __init__(self, endpoint_url: str, dsn: str, timeout: float = 5.0, max_queue_size: int = 100):
+        self._endpoint_url = endpoint_url
         self._dsn = dsn
         self._timeout = timeout
         self._queue: queue.Queue = queue.Queue(maxsize=max_queue_size)
@@ -46,7 +47,7 @@ class Transport:
         for attempt in range(max_retries):
             try:
                 req = urllib.request.Request(
-                    self._dsn,
+                    self._endpoint_url,
                     data=body,
                     headers={
                         'Content-Type': 'application/json',
